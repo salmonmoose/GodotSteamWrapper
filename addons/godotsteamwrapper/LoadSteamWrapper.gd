@@ -2,6 +2,9 @@
 class_name SteamLoader extends EditorPlugin
 
 const APP_ID = &"mist/appID"
+const WEB_API_KEY = &"mist/WebAPI"
+const ACHIEVEMENTS = &"mist/achievements/handles"
+
 
 ## Project settings
 const SETTINGS : Dictionary[StringName, Dictionary] = {
@@ -11,6 +14,18 @@ const SETTINGS : Dictionary[StringName, Dictionary] = {
 		"hint": PROPERTY_HINT_RANGE,
 		"hint_string": "0,infinity,1,or_greater,hide_slider",
 		"default": 480,
+	},
+	WEB_API_KEY : {
+		"name": WEB_API_KEY,
+		"type": TYPE_STRING_NAME,
+		"hint": PROPERTY_HINT_RANGE,
+		"default": "",
+	},
+	ACHIEVEMENTS : {
+		"name": ACHIEVEMENTS,
+		"type": TYPE_PACKED_STRING_ARRAY,
+		"hint": PROPERTY_HINT_NONE,
+		"default": [],
 	}
 }
 

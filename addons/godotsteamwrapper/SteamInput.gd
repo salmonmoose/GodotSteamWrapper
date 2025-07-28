@@ -76,7 +76,6 @@ func _on_input_device_disconnected(_device_handle: int) -> void:
 func _on_input_configuration_loaded(_app_id: int, _device_handle: int, _config: Dictionary) -> void:
 	print("Steam Input Configuration Loaded")
 	if !controllers.has(_device_handle):
-		print("Handle does not yet exist")
 		populate_controller(_device_handle)
 
 	if not got_handles:
@@ -114,13 +113,11 @@ func populate_controller(_device_handle: int) -> void:
 				var handle : int = Steam.getAnalogActionHandle(action)
 				if handle:
 					controllers[_device_handle].actions[action] = handle
-					print(controllers[_device_handle].actions[action])
 
 			if is_instance_of(event, InputEventJoypadButton):
 				var handle : int = Steam.getDigitalActionHandle(action)
 				if handle:
 					controllers[_device_handle].actions[action] = handle
-					print(controllers[_device_handle].actions[action])
 
 func get_handles() -> void:
 	got_handles = true

@@ -7,8 +7,7 @@ var is_owned: bool : get = _get_is_owned
 var is_online : bool : get = _is_online
 var is_on_steam_deck : bool : get = _is_on_steam_deck
 var steam_avatar : Image : set = _set_steam_avatar
-
-var number_of_friends : int : get = _number_of_friends
+static var app_id : int : get = _get_app_id
 
 var auth_ticket: Dictionary
 var client_auth_tickets: Array
@@ -19,6 +18,7 @@ var Lobby : SteamLobbies
 var Authentication : SteamAuthentication
 var P2P : SteamP2P
 var Controller : SteamInput
+var HTTP : SteamHTTP
 
 enum {
 	HOST,
@@ -36,7 +36,7 @@ signal set_int_stat(stat_name: String, value: int)
 signal set_float_stat(stat_name: String, value: float)
 
 func _enter_tree() -> void:
-	var app_id = int(get_setting(SteamLoader.APP_ID))
+
 	var steam_init_response: Dictionary = Steam.steamInitEx(app_id, true)
 	print("Initializing Steam APP_ID %s: %s" % [app_id, SteamStrings.AUTH[steam_init_response.status]])
 
@@ -46,6 +46,7 @@ func _enter_tree() -> void:
 	Authentication = SteamAuthentication.new()
 	P2P = SteamP2P.new()
 	Controller = SteamInput.new()
+	HTTP = SteamHTTP.new()
 
 	if not is_owned:
 		if OS.is_debug_build():
@@ -66,6 +67,10 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	Controller._exit()
+	Steam.steamShutdown()
+
+static func _get_app_id() -> int:
+	return int(get_setting(SteamLoader.APP_ID))
 
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()
@@ -125,7 +130,7 @@ func _avatar_loaded(id:int, size:int, buffer:PackedByteArray) -> void:
 			lobby_member.avatar = Image.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
 
 # Grabs a setting from the project, or returns the plugin's default if it does not exist.
-func get_setting(setting: StringName) -> Variant:
+static func get_setting(setting: StringName) -> Variant:
 	if ProjectSettings.has_setting(setting):
 		return ProjectSettings.get_setting(setting)
 	else:
