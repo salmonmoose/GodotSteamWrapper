@@ -1,12 +1,24 @@
 @tool
-extends EditorPlugin
+class_name SteamLoader extends EditorPlugin
+
+const APP_ID = &"mist/appID"
 
 ## Project settings
-const CONSOLE_THEME : String = &"steam/steamID"
+const SETTINGS : Dictionary[StringName, Dictionary] = {
+	APP_ID : {
+		"name": APP_ID,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_RANGE,
+		"hint_string": "0,infinity,1,or_greater,hide_slider",
+		"default": 480,
+	}
+}
 
 func _enter_tree() -> void:
-	add_autoload_singleton("Mist", "res://addons/godotsteamwrapper/SteamGlobal.gd")
+	for setting : StringName in SETTINGS:
+		add_setting(setting, SETTINGS[setting], SETTINGS[setting].default)
 
+	add_autoload_singleton("Mist", "res://addons/godotsteamwrapper/SteamGlobal.gd")
 
 ## Add a setting for the project - mostly a wrapper for ease
 func add_setting(setting_name: String, property_info: Dictionary, default: Variant) -> void:

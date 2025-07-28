@@ -2,14 +2,7 @@ class_name SteamP2P extends Object
 
 const PACKET_READ_LIMIT: int = 32
 
-var P2PSessionError : Dictionary = {
-	Steam.P2P_SESSION_ERROR_NONE : "Session failure with no error given",
-	Steam.P2P_SESSION_ERROR_NOT_RUNNING_APP: "Session failure: target user not running the same game",
-	Steam.P2P_SESSION_ERROR_NO_RIGHTS_TO_APP: "Session failure: local user doesn't own app / game",
-	Steam.P2P_SESSION_ERROR_DESTINATION_NOT_LOGGED_ON: "Session failure: target user isn't connected to Steam",
-	Steam.P2P_SESSION_ERROR_TIMEOUT: "Session failure: connection timed out",
-	Steam.P2P_SESSION_ERROR_MAX : "Session failure: unused",
-}
+
 
 func _init() -> void:
 	Steam.p2p_session_request.connect(_on_p2p_session_request)
@@ -30,7 +23,7 @@ func _on_p2p_session_request(remote_id: int) -> void:
 	make_p2p_handshake()
 
 func _on_p2p_session_connect_fail(steam_id: int, session_error: int) -> void:
-	print("%s %s" % [P2PSessionError[session_error], steam_id])
+	print("%s %s" % [SteamStrings.P2P_SESSION[session_error], steam_id])
 
 func read_all_p2p_packets(read_count: int = 0) -> void:
 	if read_count >= PACKET_READ_LIMIT:

@@ -11,30 +11,7 @@ var lobbies : Dictionary : get = _get_lobbies
 var is_host : bool : get = _get_is_host
 
 var lobbyTypes : Dictionary = {
-	Steam.LOBBY_TYPE_PRIVATE : 'Private',
-	Steam.LOBBY_TYPE_FRIENDS_ONLY : 'Friends Only',
-	Steam.LOBBY_TYPE_PUBLIC : 'Public',
-	Steam.LOBBY_TYPE_INVISIBLE : 'Invisible',
-}
 
-var chat_room_enter_responses : Dictionary = {
-	Steam.CHAT_ROOM_ENTER_RESPONSE_DOESNT_EXIST : "This lobby no longer exists.",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_NOT_ALLOWED : "You don't have permission to join this lobby.",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_FULL : "The lobby is now full.",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_ERROR : "Uh... something unexpected happened!",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_BANNED : "You are banned from this lobby.",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_LIMITED : "You cannot join due to having a limited account.",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_CLAN_DISABLED : "This lobby is locked or disabled.",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_COMMUNITY_BAN : "This lobby is community locked.",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_MEMBER_BLOCKED_YOU : "A user in the lobby has blocked you from joining.",
-	Steam.CHAT_ROOM_ENTER_RESPONSE_YOU_BLOCKED_MEMBER : "A user you have blocked is in the lobby.",
-}
-
-var chat_member_state_change : Dictionary = {
-	Steam.CHAT_MEMBER_STATE_CHANGE_ENTERED: "%s has joined the lobby.",
-	Steam.CHAT_MEMBER_STATE_CHANGE_LEFT: "%s has left the lobby.",
-	Steam.CHAT_MEMBER_STATE_CHANGE_KICKED: "%s has been kicked from the lobby.",
-	Steam.CHAT_MEMBER_STATE_CHANGE_BANNED: "%s has been banned from the lobby.",
 }
 
 func _init() -> void:
@@ -182,7 +159,7 @@ func _on_lobby_joined(this_lobby_id: int, _permissions: int, _locked: bool, resp
 		Mist.lobby_joined.emit()
 
 	else:
-		var fail_reason : String = chat_room_enter_responses[response]
+		var fail_reason : String = SteamStrings.CHAT_ROOM[response]
 
 		Console.print_line("Failed to join this chat room: %s" % fail_reason)
 
@@ -195,7 +172,7 @@ func _on_persona_change(this_steam_id: int, _flag: int) -> void:
 
 func _on_lobby_chat_update(_this_lobby_id: int, steam_id: int, _making_change_id: int, chat_state: int) -> void:
 	var changer_name : String = Steam.getFriendPersonaName(steam_id)
-	var message : String = chat_member_state_change[chat_state]
+	var message : String = SteamStrings.CHAT_ROOM[chat_state]
 
 	Mist.send_message.emit(message % changer_name, steam_id)
 

@@ -35,24 +35,10 @@ signal fire_achievement(achievment_name: String)
 signal set_int_stat(stat_name: String, value: int)
 signal set_float_stat(stat_name: String, value: float)
 
-var AuthSessionResponse : Dictionary = {
-	Steam.AUTH_SESSION_RESPONSE_OK : "Authentication Successful",
-	Steam.AUTH_SESSION_RESPONSE_USER_NOT_CONNECTED_TO_STEAM: "User not connected to Steam",
-	Steam.AUTH_SESSION_RESPONSE_NO_LICENSE_OR_EXPIRED: "No License",
-	Steam.AUTH_SESSION_RESPONSE_VAC_BANNED: "Banned",
-	Steam.AUTH_SESSION_RESPONSE_LOGGED_IN_ELSEWHERE: "Logged in elsewhere",
-#	Steam.AUTH_SESSION_RESPONSE_VAC_CHECK_TIMEDOUT: "Timed out",
-	Steam.AUTH_SESSION_RESPONSE_AUTH_TICKET_CANCELED: "Ticket cancelled",
-	Steam.AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID_ALREADY_USED: "Ticket already used",
-	Steam.AUTH_SESSION_RESPONSE_AUTH_TICKET_INVALID: "Ticked invalid",
-	Steam.AUTH_SESSION_RESPONSE_PUBLISHER_ISSUED_BAN: "Banned by publisher",
-}
-
 func _enter_tree() -> void:
-	#var _steam_init_response : Dictionary = Steam.steamInitEx(true, 480) #SpaceWar
-	var steam_init_response: Dictionary = Steam.steamInitEx(486390, true) #Delve
-
-	Console.print_info("Initializing Steam: %s" % (AuthSessionResponse[steam_init_response.status]))
+	var app_id = int(get_setting(SteamLoader.APP_ID))
+	var steam_init_response: Dictionary = Steam.steamInitEx(app_id, true)
+	print("Initializing Steam APP_ID %s: %s" % [app_id, SteamStrings.AUTH[steam_init_response.status]])
 
 	Leaderboard = SteamLeaderboards.new()
 	Achievement = SteamAchievements.new()
@@ -63,7 +49,7 @@ func _enter_tree() -> void:
 
 	if not is_owned:
 		if OS.is_debug_build():
-			Console.print_warning("Game not owned on Steam")
+			push_warning("Game not owned on Steam")
 		else:
 			get_tree().quit()
 
@@ -84,7 +70,8 @@ func _exit_tree() -> void:
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()
 	if (Controller):
-		Controller.emit_input_signals()
+		pass
+		#Controller.emit_input_signals()
 	if Lobby.currentLobby and Lobby.currentLobby.id > 0:
 		P2P.read_all_p2p_packets()
 
@@ -137,7 +124,13 @@ func _avatar_loaded(id:int, size:int, buffer:PackedByteArray) -> void:
 		if lobby_member.id == id:
 			lobby_member.avatar = Image.create_from_data(size, size, false, Image.FORMAT_RGBA8, buffer)
 
-
+# Grabs a setting from the project, or returns the plugin's default if it does not exist.
+func get_setting(setting: StringName) -> Variant:
+	if ProjectSettings.has_setting(setting):
+		return ProjectSettings.get_setting(setting)
+	else:
+		push_warning("Did not find a setting for %s" % setting)
+		return SteamLoader.SETTINGS[setting]['default']
 
 func get_friends() -> Array[PlayerData]:
 	var _friends : Array[PlayerData] = []
