@@ -1,3 +1,4 @@
+@tool
 class_name SteamLeaderboards extends Object
 
 enum WEB_CALL {
@@ -121,5 +122,13 @@ func _on_leaderboard_scores_downloaded(message: String, this_leaderboard_handle:
 	for this_result : int in result:
 		print(result)
 
-func register_leaderboard() -> void:
-	pass
+## Register a leaderboard string
+static func register(name : StringName) -> void:
+	var leaderboards : PackedStringArray
+	if ProjectSettings.has_setting(SteamLoader.LEADERBOARDS):
+		leaderboards = ProjectSettings.get_setting(SteamLoader.LEADERBOARDS)
+	else:
+		leaderboards = SteamLoader.SETTINGS[SteamLoader.LEADERBOARDS].default
+	ProjectSettings.set_setting(SteamLoader.LEADERBOARDS, leaderboards)
+
+	ProjectSettings.save()

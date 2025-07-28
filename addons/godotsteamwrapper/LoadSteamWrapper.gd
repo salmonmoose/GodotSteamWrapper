@@ -3,8 +3,8 @@ class_name SteamLoader extends EditorPlugin
 
 const APP_ID = &"mist/appID"
 const WEB_API_KEY = &"mist/WebAPI"
-const ACHIEVEMENTS = &"mist/achievements/handles"
-
+const ACHIEVEMENTS = &"mist/stats/achievments"
+const LEADERBOARDS = &"mist/stats/leaderboards"
 
 ## Project settings
 const SETTINGS : Dictionary[StringName, Dictionary] = {
@@ -23,6 +23,12 @@ const SETTINGS : Dictionary[StringName, Dictionary] = {
 	},
 	ACHIEVEMENTS : {
 		"name": ACHIEVEMENTS,
+		"type": TYPE_PACKED_STRING_ARRAY,
+		"hint": PROPERTY_HINT_NONE,
+		"default": [],
+	},
+	LEADERBOARDS : {
+		"name": LEADERBOARDS,
 		"type": TYPE_PACKED_STRING_ARRAY,
 		"hint": PROPERTY_HINT_NONE,
 		"default": [],
