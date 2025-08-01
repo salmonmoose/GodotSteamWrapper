@@ -1,4 +1,4 @@
-class_name SteamAuthentication extends Object
+class_name MistAuthentication extends Object
 
 func _init() -> void:
 	Steam.get_auth_session_ticket_response.connect(_on_get_auth_session_ticket_response)

@@ -1,4 +1,5 @@
-class_name SteamLobbies extends Node
+@tool
+class_name MistLobbies extends Node
 
 var lobby_id: int : get = _get_lobby_id, set = _set_lobby_id
 var currentLobby : LobbyData

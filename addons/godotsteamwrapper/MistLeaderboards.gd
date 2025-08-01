@@ -1,5 +1,7 @@
 @tool
-class_name SteamLeaderboards extends Object
+class_name MistLeaderboards extends Object
+
+signal on_fetch_leaderboards
 
 enum WEB_CALL {
 	GetLeaderboardsForGame,
@@ -11,23 +13,23 @@ enum WEB_CALL {
 var WEB_CALL_DEFINITION : Dictionary = {
 		WEB_CALL.GetLeaderboardsForGame: {
 			&"method": HTTPClient.METHOD_GET,
-			&"url": SteamHTTP.WEB_API % ["ISteamLeaderboards", "GetLeaderboardsForGame", "1"],
+			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "GetLeaderboardsForGame", "1"],
 			&"data": {
-				&"key": SteamHTTP.web_api_key,
-				&"appid": SteamGlobal.app_id,
+				&"key": MistHTTP.web_api_key,
+				&"appid": Mist.app_id,
 			}
 		},
 		WEB_CALL.FindOrCreateLeaderboard: {
 			&"method": HTTPClient.METHOD_POST,
-			&"url": SteamHTTP.WEB_API % ["ISteamLeaderboards", "FindOrCreateLeaderboard", "1"],
+			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "FindOrCreateLeaderboard", "1"],
 		},
 		WEB_CALL.UploadLeaderboardScore: {
 			&"method": HTTPClient.METHOD_POST,
-			&"url": SteamHTTP.WEB_API % ["ISteamLeaderboards", "UploadLeaderboardScore", "1"],
+			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "UploadLeaderboardScore", "1"],
 		},
 		WEB_CALL.GetLeaderboardEntries: {
 			&"method": HTTPClient.METHOD_GET,
-			&"url": SteamHTTP.WEB_API % ["ISteamLeaderboards", "GetLeaderboardEntries", "1"],
+			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "GetLeaderboardEntries", "1"],
 		}
 	}
 
@@ -38,6 +40,7 @@ enum SortMethod {
 
 enum DisplayType {
 	Numeric,
+	Seconds,
 	MilliSeconds,
 }
 
@@ -49,8 +52,38 @@ class Leaderboard:
 	var only_trusted_writes : bool
 	var only_friends_reads : bool
 	var only_users_in_same_party : bool
-	var limit_range_around_user : float
-	var limit_global_top_entries : float
+	var limit_range_around_user : int
+	var limit_global_top_entries : int
+	var on_steam : bool
+	var on_local : bool
+
+	static func parse(data : Dictionary) -> Leaderboard:
+		var leaderboard : Leaderboard = Leaderboard.new()
+
+		leaderboard.id = data.leaderBoardID
+		leaderboard.entries = data.leaderBoardEntries
+		leaderboard.sort_method = SortMethod.keys().find(data.leaderBoardSortMethod)
+		leaderboard.display_type = DisplayType.keys().find(data.leaderBoardDisplayType)
+		leaderboard.only_trusted_writes = true if data.onlytrustedwrites else false
+		leaderboard.only_friends_reads = data.onlyfriendsreads
+		leaderboard.only_users_in_same_party = data.onlyusersinsameparty
+		leaderboard.limit_range_around_user = int(data.limitrangearounduser)
+		leaderboard.limit_global_top_entries = int(data.limitglobaltopentries)
+
+		return leaderboard
+
+	func _to_string() -> String:
+		return "%s, %s, %s, %s, %s, %s, %s, %s, %s" % [
+			id,
+			entries,
+			sort_method,
+			display_type,
+			only_trusted_writes,
+			only_friends_reads,
+			only_users_in_same_party,
+			limit_range_around_user,
+			limit_global_top_entries
+		]
 
 var leaderboards : Dictionary[StringName, Leaderboard]
 
@@ -60,7 +93,6 @@ func _init() -> void:
 	Steam.leaderboard_find_result.connect(_on_leaderboard_find_result)
 	Steam.leaderboard_score_uploaded.connect(_on_leaderboard_score_uploaded)
 	Steam.leaderboard_scores_downloaded.connect(_on_leaderboard_scores_downloaded)
-	get_leaderboards()
 
 func find_leaderboard(level_name: String) -> void:
 	Steam.findLeaderboard(level_name)
@@ -74,32 +106,27 @@ func get_scores(leaderboard: int, place_start: int = 1, place_end: int = 10, lea
 func get_user_scores(leaderboard: int, users : Array[int])  -> void:
 	Steam.downloadLeaderboardEntriesForUsers(users, leaderboard)
 
-func get_leaderboards() -> void:
-	SteamHTTP.make_request(
+## Fetch the currently known leaderboard from Steam
+func fetch_leaderboards() -> void:
+	Mist.HTTP.make_request(
 		WEB_CALL_DEFINITION[WEB_CALL.GetLeaderboardsForGame],
 		_parse_leaderboards
 		)
 
+## Convert the Steam data into local copies of the leaderboards
 func _parse_leaderboards(result, response_code, headers, body):
 	var json = JSON.new()
 	json.parse(body.get_string_from_utf8())
-	#data = data[data.keys()[0]] # get the first element
+
 	var data = json.get_data()['leaderBoards']
+
 	for key in data:
 		if key != "leaderBoardCount":
-			var leaderboard : SteamLeaderboards.Leaderboard = SteamLeaderboards.Leaderboard.new()
+			if not leaderboards.has(key):
+				leaderboards[key] = Leaderboard.parse(data[key])
 
-			leaderboard.id = data[key].leaderBoardID
-			leaderboard.entries = data[key].leaderBoardEntries
-			leaderboard.sort_method = data[key].leaderBoardSortMethod
-			leaderboard.display_type = data[key].leaderBoardDisplayType
-			leaderboard.only_trusted_writes = data[key].onlytrustedwrites
-			leaderboard.only_friends_reads = data[key].onlyfriendsreads
-			leaderboard.only_users_in_same_party = data[key].onlyusersinsameparty
-			leaderboard.limit_range_around_user = data[key].limitrangearounduser
-			leaderboard.limit_global_top_entries = data[key].limitglobaltopentries
-
-			leaderboards[key] = leaderboard
+			leaderboards[key].on_steam = true
+	on_fetch_leaderboards.emit()
 
 func _on_leaderboard_find_result(handle: int, found: int) -> void:
 	if found == 1:
@@ -123,12 +150,13 @@ func _on_leaderboard_scores_downloaded(message: String, this_leaderboard_handle:
 		print(result)
 
 ## Register a leaderboard string
-static func register(name : StringName) -> void:
-	var leaderboards : PackedStringArray
-	if ProjectSettings.has_setting(SteamLoader.LEADERBOARDS):
-		leaderboards = ProjectSettings.get_setting(SteamLoader.LEADERBOARDS)
-	else:
-		leaderboards = SteamLoader.SETTINGS[SteamLoader.LEADERBOARDS].default
-	ProjectSettings.set_setting(SteamLoader.LEADERBOARDS, leaderboards)
+func register(name : StringName) -> void:
+	if leaderboards.has(name):
+		return
 
-	ProjectSettings.save()
+	var leaderboard : Leaderboard = Leaderboard.new()
+
+	leaderboard.on_local = true
+	leaderboards[name] = leaderboard
+
+	print(leaderboard)

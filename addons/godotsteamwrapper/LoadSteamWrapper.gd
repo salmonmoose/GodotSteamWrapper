@@ -29,17 +29,28 @@ const SETTINGS : Dictionary[StringName, Dictionary] = {
 	},
 	LEADERBOARDS : {
 		"name": LEADERBOARDS,
-		"type": TYPE_PACKED_STRING_ARRAY,
+		"type": TYPE_OBJECT,
 		"hint": PROPERTY_HINT_NONE,
 		"default": [],
 	}
 }
 
+var dock
+
 func _enter_tree() -> void:
 	for setting : StringName in SETTINGS:
 		add_setting(setting, SETTINGS[setting], SETTINGS[setting].default)
 
-	add_autoload_singleton("Mist", "res://addons/godotsteamwrapper/SteamGlobal.gd")
+	add_autoload_singleton("Mist", "res://addons/godotsteamwrapper/Mist.gd")
+
+	dock = preload("uid://bvrfuplm0c3sq").instantiate()
+	add_control_to_bottom_panel(dock, "Mist")
+
+func _exit_tree() -> void:
+	remove_autoload_singleton("Mist")
+	remove_control_from_bottom_panel(dock)
+	dock.free()
+
 
 ## Add a setting for the project - mostly a wrapper for ease
 func add_setting(setting_name: String, property_info: Dictionary, default: Variant) -> void:

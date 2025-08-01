@@ -1,4 +1,4 @@
-class_name SteamHTTP extends Node
+class_name MistHTTP extends Node
 
 #Grants access to functions available here: https://partner.steamgames.com/doc/webapi_overview
 
@@ -74,11 +74,8 @@ const WEB_API: String = "https://partner.steam-api.com/%s/%s/v%s/"
 
 static var web_api_key: String : get = _get_web_api_key
 
-func _init() -> void:
-	pass
-
 static func _get_web_api_key() -> String:
-	return SteamGlobal.get_setting(SteamLoader.WEB_API_KEY)
+	return Mist.get_setting(SteamLoader.WEB_API_KEY)
 
 static func make_request(data : Dictionary, callback : Callable = Callable()):
 	var headers = ["Content-Type: application/json"]
@@ -92,7 +89,6 @@ static func make_request(data : Dictionary, callback : Callable = Callable()):
 	Mist.add_child(HTTP)
 
 	if callback:
-		print("found a callback", callback)
 		HTTP.request_completed.connect(callback)
 	else:
 		HTTP.request_completed.connect(func(data): print(data))

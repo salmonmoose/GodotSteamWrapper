@@ -1,4 +1,4 @@
-class_name SteamP2P extends Object
+class_name MistP2P extends Object
 
 const PACKET_READ_LIMIT: int = 32
 

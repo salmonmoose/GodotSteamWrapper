@@ -1,4 +1,4 @@
-class_name SteamInput extends Object
+class_name MistInput extends Object
 var device_handle : int
 var device_type : int
 
@@ -21,6 +21,8 @@ var action_states : Dictionary[int, Dictionary] = {}
 ## A list of signals that this game is aware of
 var input_signal : Array[StringName]
 
+var player_handle : int = 0
+
 var action_sets : Dictionary[String, int] = {
 	&"InGameControls": 0,
 	&"MenuControls": 0,
@@ -39,6 +41,7 @@ func _init() -> void:
 	Steam.input_gamepad_slot_change.connect(_on_input_gamepad_slot_change)
 	print("Initializing Steam Input")
 	Steam.inputInit(true)
+	Steam.runFrame()
 	Steam.enableDeviceCallbacks()
 
 func _exit() -> void:
@@ -47,13 +50,13 @@ func _exit() -> void:
 func emit_input_signals() -> void:
 	var window : Window = GameGlobal.get_tree().root
 	for action : StringName in input_signal:
-		if is_action_just_pressed(PlayerGlobal.controller_handle, action):
+		if is_action_just_pressed(player_handle, action):
 			var event : InputEventAction = InputEventAction.new()
 			event.action = action
 			event.pressed = true
 			window.push_input(event)
 
-		if is_action_just_released(PlayerGlobal.controller_handle, action):
+		if is_action_just_released(player_handle, action):
 			var event : InputEventAction = InputEventAction.new()
 			event.action = action
 			event.pressed = false
@@ -61,7 +64,7 @@ func emit_input_signals() -> void:
 
 func _set_current_action_set(value: String) -> void:
 	assert(action_sets.has(value), "Missing action set %s")
-	Steam.activateActionSet(PlayerGlobal.controller_handle, action_sets[value])
+	Steam.activateActionSet(player_handle, action_sets[value])
 	current_action_set = value
 
 func _on_input_device_connected(_device_handle: int) -> void:
@@ -81,10 +84,10 @@ func _on_input_configuration_loaded(_app_id: int, _device_handle: int, _config: 
 	if not got_handles:
 		get_handles()
 
-	if PlayerGlobal.controller_handle < 0:
-		PlayerGlobal.controller_handle = _device_handle
+	if player_handle < 0:
+		player_handle = _device_handle
 
-	Steam.activateActionSet(PlayerGlobal.controller_handle, action_sets[current_action_set])
+	Steam.activateActionSet(player_handle, action_sets[current_action_set])
 
 func _on_input_gamepad_slot_change(
 	_app_id: int,

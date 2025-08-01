@@ -1,4 +1,4 @@
-class_name SteamAchievements extends Node
+class_name MistAchievements extends Node
 
 
 

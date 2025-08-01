@@ -1,4 +1,5 @@
-class_name SteamGlobal extends Node
+@tool
+class_name MistMain extends Node
 
 var is_running : bool : get = _is_steam_running
 var steam_id : int : get = _get_steam_id
@@ -12,13 +13,13 @@ static var app_id : int : get = _get_app_id
 var auth_ticket: Dictionary
 var client_auth_tickets: Array
 
-var Leaderboard : SteamLeaderboards
-var Achievement : SteamAchievements
-var Lobby : SteamLobbies
-var Authentication : SteamAuthentication
-var P2P : SteamP2P
-var Controller : SteamInput
-var HTTP : SteamHTTP
+var Leaderboards : MistLeaderboards
+var Achievements : MistAchievements
+var Lobby : MistLobbies
+var Authentication : MistAuthentication
+var P2P : MistP2P
+var Controller : MistInput
+var HTTP : MistHTTP
 
 enum {
 	HOST,
@@ -36,17 +37,17 @@ signal set_int_stat(stat_name: String, value: int)
 signal set_float_stat(stat_name: String, value: float)
 
 func _enter_tree() -> void:
-
 	var steam_init_response: Dictionary = Steam.steamInitEx(app_id, true)
 	print("Initializing Steam APP_ID %s: %s" % [app_id, SteamStrings.AUTH[steam_init_response.status]])
 
-	Leaderboard = SteamLeaderboards.new()
-	Achievement = SteamAchievements.new()
-	Lobby = SteamLobbies.new()
-	Authentication = SteamAuthentication.new()
-	P2P = SteamP2P.new()
-	Controller = SteamInput.new()
-	HTTP = SteamHTTP.new()
+	HTTP = MistHTTP.new()
+	Leaderboards = MistLeaderboards.new()
+	#Achievements = MistAchievements.new()
+	#Lobby = MistLobbies.new()
+	#Authentication = MistAuthentication.new()
+	#P2P = MistP2P.new()
+	#Controller = MistInput.new()
+
 
 	if not is_owned:
 		if OS.is_debug_build():
@@ -54,19 +55,20 @@ func _enter_tree() -> void:
 		else:
 			get_tree().quit()
 
-	SettingsGlobal.player.name = steam_name
+	#SettingsGlobal.player.name = steam_name
 
-	Steam.avatar_loaded.connect(_avatar_loaded)
+	#Steam.avatar_loaded.connect(_avatar_loaded)
+#
+	#Steam.network_messages_session_request.connect(_on_network_messages_session_request)
+	#Steam.network_messages_session_failed.connect(_on_network_messages_session_failed)
 
-	Steam.network_messages_session_request.connect(_on_network_messages_session_request)
-	Steam.network_messages_session_failed.connect(_on_network_messages_session_failed)
-
-	Steam.getPlayerAvatar()
-
-	auth_ticket = Steam.getAuthSessionTicket()
+	#Steam.getPlayerAvatar()
+#
+	#auth_ticket = Steam.getAuthSessionTicket()
 
 func _exit_tree() -> void:
-	Controller._exit()
+	if Controller:
+		Controller._exit()
 	Steam.steamShutdown()
 
 static func _get_app_id() -> int:
@@ -74,11 +76,11 @@ static func _get_app_id() -> int:
 
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()
-	if (Controller):
-		pass
-		#Controller.emit_input_signals()
-	if Lobby.currentLobby and Lobby.currentLobby.id > 0:
-		P2P.read_all_p2p_packets()
+	#if (Controller):
+		#pass
+		##Controller.emit_input_signals()
+	#if Lobby.currentLobby and Lobby.currentLobby.id > 0:
+		#P2P.read_all_p2p_packets()
 
 func _on_network_messages_session_request(this_identity: String) -> void:
 	var this_id: String = this_identity.split(':', true)[1]
