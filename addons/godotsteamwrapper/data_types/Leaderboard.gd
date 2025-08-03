@@ -17,14 +17,8 @@ class_name LeaderboardData extends Resource
 @export var sort_method_string : StringName : get = _get_sort_method_string
 @export var display_type_string : StringName : get = _get_display_type_string
 
-static func parse(data : Dictionary) -> LeaderboardData:
-	var leaderboard : LeaderboardData = LeaderboardData.new()
-
-	leaderboard.set_data(data)
-
-	return leaderboard
-
-func set_data(data: Dictionary) -> void:
+func parse(data: Dictionary) -> void:
+	print(data)
 	id = data.leaderBoardID
 	entries = data.leaderBoardEntries
 	sort_method = MistLeaderboards.SortMethod.keys().find(data.leaderBoardSortMethod)

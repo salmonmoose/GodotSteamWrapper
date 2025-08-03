@@ -4,6 +4,7 @@ extends VBoxContainer
 var both : Color = Color.GREEN
 var local : Color = Color.YELLOW
 var steam : Color = Color.BLUE
+var none : Color = Color.RED
 
 @onready var leaderboard_tree : Tree = %LeaderboardList
 var root : TreeItem
@@ -27,6 +28,7 @@ func _ready() -> void:
 	Mist.Config.data_updated.connect(_populate_leaderboards)
 	leaderboard_tree.cell_selected.connect(_tree_clicked)
 	leaderboard_tree.hide_root = true
+	Mist.Leaderboards.fetch_leaderboards()
 	_populate_leaderboards()
 
 
@@ -76,6 +78,8 @@ func configure_node(name: StringName) -> void:
 		leaves[name].set_custom_color(0, local)
 	elif leaderboard.on_steam:
 		leaves[name].set_custom_color(0, steam)
+	else:
+		leaves[name].set_custom_color(0, none)
 
 func _on_fetch_leaderboards_button_pressed() -> void:
 	Mist.Leaderboards.fetch_leaderboards()
@@ -84,11 +88,11 @@ func _on_fetch_leaderboards_button_pressed() -> void:
 func _on_push_to_steam_pressed() -> void:
 	var leaderboard_key : StringName = leaderboard_tree.get_selected().get_text(0)
 	var leaderboard : LeaderboardData = Mist.Config.data.Leaderboards[leaderboard_key]
-	Mist.Leaderboards.find_or_create_leaderboards(leaderboard)
+	Mist.Leaderboards.find_or_create_leaderboard(leaderboard)
 
 
 func _on_delete_leaderboard_pressed() -> void:
-	pass # Replace with function body.
+	Mist.Leaderboards.delete_leaderboard(leaderboard)
 
 
 func _on_get_scores_pressed() -> void:

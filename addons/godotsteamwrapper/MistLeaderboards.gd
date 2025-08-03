@@ -9,9 +9,18 @@ enum WEB_CALL {
 	UploadLeaderboardScore,
 	GetLeaderboardEntries,
 	SetLeaderboardScore,
+	DeleteLeaderboard,
 }
 
 var WEB_CALL_DEFINITION : Dictionary = {
+		WEB_CALL.DeleteLeaderboard: {
+			&"method": HTTPClient.METHOD_POST,
+			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "DeleteLeaderboard", "1"],
+			&"data": {
+				&"key": MistHTTP.web_api_key,
+				&"appid": str(Mist.app_id),
+			}
+		},
 		WEB_CALL.GetLeaderboardsForGame: {
 			&"method": HTTPClient.METHOD_GET,
 			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "GetLeaderboardsForGame", "1"],
@@ -78,6 +87,7 @@ func get_leaderboard(leaderboard_name: StringName) -> int:
 
 func find_leaderboard(leaderboard_name: String) -> void:
 	## Godot Steam wants us to call steam for this
+	## Getting this from the local DB is faster
 	Steam.findLeaderboard(leaderboard_name)
 
 func set_score(leaderboard: int, score: int, details: Array[int] = [], keep_best: bool = true) -> void:
@@ -98,7 +108,7 @@ func fetch_leaderboards() -> void:
 		_parse_leaderboards
 		)
 
-func find_or_create_leaderboards(leaderboard : LeaderboardData) -> void:
+func find_or_create_leaderboard(leaderboard : LeaderboardData) -> void:
 	var call = WEB_CALL_DEFINITION[WEB_CALL.FindOrCreateLeaderboard]
 	call.data[&"name"] = leaderboard.name
 	call.data[&"sortmethod"] = leaderboard.sort_method_string
@@ -108,8 +118,19 @@ func find_or_create_leaderboards(leaderboard : LeaderboardData) -> void:
 
 	Mist.HTTP.make_request(
 		call,
-		_on_find_or_create_leaderboards
+		_on_find_or_create_leaderboard
 		)
+
+func delete_leaderboard(leaderboard : LeaderboardData) -> void:
+	var call = WEB_CALL_DEFINITION[WEB_CALL.DeleteLeaderboard]
+	call.data[&"name"] = leaderboard.name
+
+	Mist.HTTP.make_request(
+		call,
+		_on_delete_leaderboard
+	)
+
+	Mist.Config.data.Leaderboards.erase(leaderboard.name)
 
 ## Convert the Steam data into local copies of the leaderboards
 func _parse_leaderboards(result, response_code, headers, body):
@@ -117,12 +138,15 @@ func _parse_leaderboards(result, response_code, headers, body):
 	json.parse(body.get_string_from_utf8())
 	var data = json.get_data()['leaderBoards']
 
+	for leaderboard in Mist.Config.data.Leaderboards:
+		Mist.Config.data.Leaderboards[leaderboard].on_steam = false
+
 	for key in data:
 		if key != "leaderBoardCount":
 			if not Mist.Config.data.Leaderboards.has(key):
 				Mist.Config.data.Leaderboards[key] = LeaderboardData.new()
 
-			Mist.Config.data.Leaderboards[key].set_data(data)
+			Mist.Config.data.Leaderboards[key].parse(data[key])
 			Mist.Config.data.Leaderboards[key].name = key
 			Mist.Config.data.Leaderboards[key].on_steam = true
 			Mist.Config.save_data()
@@ -137,8 +161,11 @@ func _on_leaderboard_find_result(handle: int, found: int) -> void:
 	else:
 		print("No handle found")
 
-func _on_find_or_create_leaderboards(result, response_code, headers, body):
+func _on_find_or_create_leaderboard(result, response_code, headers, body):
 	print(result, response_code, headers, body.get_string_from_utf8())
+	fetch_leaderboards()
+
+func _on_delete_leaderboard(result, response_code, headers, body):
 	fetch_leaderboards()
 
 func _on_leaderboard_score_uploaded(success: int, this_handle: int, this_score: Dictionary) -> void:
@@ -155,6 +182,8 @@ func _on_leaderboard_scores_downloaded(message: String, this_leaderboard_handle:
 		print(result)
 
 ## Register a leaderboard string
+## Registered Leaderboards are marked as local and can be pushed to steam to assure matching
+## Leaderboard pairs
 func register(name : StringName) -> void:
 	if not Mist.Config.data.Leaderboards[name]:
 		print("Registering new leaderboard: %s" % name)
