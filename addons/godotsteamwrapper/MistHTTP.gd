@@ -78,12 +78,12 @@ static func _get_web_api_key() -> String:
 	return Mist.get_setting(SteamLoader.WEB_API_KEY)
 
 static func make_request(data : Dictionary, callback : Callable = Callable()):
-	var headers = ["Content-Type: application/json"]
-	var json = JSON.stringify(data.data)
+	var headers = ["Content-Type: application/x-www-form-urlencoded"]
+	var json = JSON.new().stringify(data.data)
 
 	var query : Array[String]
 	for key in data.data:
-		query.push_back("%s=%s" % [key, data.data[key]])
+		query.push_back("%s=%s" % [str(key).uri_encode(), str(data.data[key]).uri_encode()])
 
 	var HTTP = HTTPRequest.new()
 	Mist.add_child(HTTP)
@@ -94,11 +94,15 @@ static func make_request(data : Dictionary, callback : Callable = Callable()):
 		HTTP.request_completed.connect(func(data): print(data))
 
 	var error = HTTP.request(
-		"%s?%s" % [data.url, "&".join(query)],
+		data.url,
 		headers,
-		HTTPClient.METHOD_GET,
-		json
-	)
+		data.method,
+		"&".join(query)
+	) if data.method != HTTPClient.METHOD_GET else HTTP.request(
+			"%s?%s" % [data.url, "&".join(query)],
+			headers,
+			data.method
+		)
 
 	if error != OK:
 		push_error("An error occurred in the http request: %s" % HTTP_ERRORS[error])

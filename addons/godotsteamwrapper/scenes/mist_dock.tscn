@@ -70,105 +70,166 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 hide_root = true
 
-[node name="LeaderboardView" type="GridContainer" parent="TabContainer/Leaderboards/Frames"]
+[node name="LeaderboardView" type="VBoxContainer" parent="TabContainer/Leaderboards/Frames"]
+layout_mode = 2
+
+[node name="InputGrid" type="GridContainer" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
 layout_mode = 2
 size_flags_horizontal = 8
 columns = 2
 
-[node name="name_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="name_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Name"
 
-[node name="name_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="name_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 
-[node name="entries_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="entries_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Entries"
 
-[node name="entries_data" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="entries_data" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="id_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="id_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "ID"
 
-[node name="id_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="id_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="display_type_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="display_type_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Display Type"
 
-[node name="display_type_edit" type="OptionButton" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="display_type_edit" type="OptionButton" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
-item_count = 3
+item_count = 15
 popup/item_0/text = "Numeric"
 popup/item_0/id = 0
 popup/item_1/text = "Seconds"
 popup/item_1/id = 1
 popup/item_2/text = "MilliSeconds"
 popup/item_2/id = 2
+popup/item_3/text = "Numeric"
+popup/item_3/id = 3
+popup/item_4/text = "Seconds"
+popup/item_4/id = 4
+popup/item_5/text = "MilliSeconds"
+popup/item_5/id = 5
+popup/item_6/text = "Numeric"
+popup/item_6/id = 6
+popup/item_7/text = "Seconds"
+popup/item_7/id = 7
+popup/item_8/text = "MilliSeconds"
+popup/item_8/id = 8
+popup/item_9/text = "Numeric"
+popup/item_9/id = 9
+popup/item_10/text = "Seconds"
+popup/item_10/id = 10
+popup/item_11/text = "MilliSeconds"
+popup/item_11/id = 11
+popup/item_12/text = "Numeric"
+popup/item_12/id = 12
+popup/item_13/text = "Seconds"
+popup/item_13/id = 13
+popup/item_14/text = "MilliSeconds"
+popup/item_14/id = 14
 
-[node name="sort_method_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="sort_method_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Sort Method"
 
-[node name="sort_method_edit" type="OptionButton" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="sort_method_edit" type="OptionButton" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
-item_count = 2
+item_count = 10
 popup/item_0/text = "Ascending"
 popup/item_0/id = 0
 popup/item_1/text = "Descending"
 popup/item_1/id = 1
+popup/item_2/text = "Ascending"
+popup/item_2/id = 2
+popup/item_3/text = "Descending"
+popup/item_3/id = 3
+popup/item_4/text = "Ascending"
+popup/item_4/id = 4
+popup/item_5/text = "Descending"
+popup/item_5/id = 5
+popup/item_6/text = "Ascending"
+popup/item_6/id = 6
+popup/item_7/text = "Descending"
+popup/item_7/id = 7
+popup/item_8/text = "Ascending"
+popup/item_8/id = 8
+popup/item_9/text = "Descending"
+popup/item_9/id = 9
 
-[node name="only_trusted_writes_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="only_trusted_writes_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Only Trusted Writes"
 
-[node name="only_trusted_writes_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="only_trusted_writes_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="only_friends_reads_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="only_friends_reads_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Only Friends Reads"
 
-[node name="only_friends_reads_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="only_friends_reads_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="only_users_in_same_party_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="only_users_in_same_party_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Only users in same party"
 
-[node name="only_users_in_same_party_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="only_users_in_same_party_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="limit_global_top_entries_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="limit_global_top_entries_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Limit global top entries"
 
-[node name="limit_global_top_entries_edit" type="SpinBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="limit_global_top_entries_edit" type="SpinBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="limit_range_around_user_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="limit_range_around_user_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Limit range around user"
 
-[node name="limit_range_around_user_edit" type="SpinBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="limit_range_around_user_edit" type="SpinBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="push_to_steam" type="Button" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Push to Steam"
+
+[node name="delete_leaderboard" type="Button" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Delete Leaderbaord"
+
+[node name="get_scores" type="Button" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+layout_mode = 2
+text = "Get Scores"
+
+[node name="reset_scores" type="Button" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+layout_mode = 2
+text = "Reset Scores"
 
 [node name="Lobbies" type="VBoxContainer" parent="TabContainer"]
 visible = false
@@ -187,3 +248,7 @@ metadata/_tab_index = 6
 
 [connection signal="pressed" from="TabContainer/Mist/Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="TabContainer/Leaderboards/Frames/Actions/FetchLeaderboardsButton" to="TabContainer/Leaderboards" method="_on_fetch_leaderboards_button_pressed"]
+[connection signal="pressed" from="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid/push_to_steam" to="TabContainer/Leaderboards" method="_on_push_to_steam_pressed"]
+[connection signal="pressed" from="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid/delete_leaderboard" to="TabContainer/Leaderboards" method="_on_delete_leaderboard_pressed"]
+[connection signal="pressed" from="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid/get_scores" to="TabContainer/Leaderboards" method="_on_get_scores_pressed"]
+[connection signal="pressed" from="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid/reset_scores" to="TabContainer/Leaderboards" method="_on_reset_scores_pressed"]

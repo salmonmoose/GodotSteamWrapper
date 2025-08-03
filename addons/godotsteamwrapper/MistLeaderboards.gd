@@ -1,5 +1,5 @@
 @tool
-class_name MistLeaderboards extends Object
+class_name MistLeaderboards extends Node
 
 signal on_fetch_leaderboards
 
@@ -8,6 +8,7 @@ enum WEB_CALL {
 	FindOrCreateLeaderboard,
 	UploadLeaderboardScore,
 	GetLeaderboardEntries,
+	SetLeaderboardScore,
 }
 
 var WEB_CALL_DEFINITION : Dictionary = {
@@ -16,12 +17,16 @@ var WEB_CALL_DEFINITION : Dictionary = {
 			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "GetLeaderboardsForGame", "1"],
 			&"data": {
 				&"key": MistHTTP.web_api_key,
-				&"appid": Mist.app_id,
+				&"appid": str(Mist.app_id),
 			}
 		},
 		WEB_CALL.FindOrCreateLeaderboard: {
 			&"method": HTTPClient.METHOD_POST,
-			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "FindOrCreateLeaderboard", "1"],
+			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "FindOrCreateLeaderboard", "2"],
+			&"data": {
+				&"key": MistHTTP.web_api_key,
+				&"appid": str(Mist.app_id),
+			}
 		},
 		WEB_CALL.UploadLeaderboardScore: {
 			&"method": HTTPClient.METHOD_POST,
@@ -30,6 +35,14 @@ var WEB_CALL_DEFINITION : Dictionary = {
 		WEB_CALL.GetLeaderboardEntries: {
 			&"method": HTTPClient.METHOD_GET,
 			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "GetLeaderboardEntries", "1"],
+		},
+		WEB_CALL.SetLeaderboardScore: {
+			&"method": HTTPClient.METHOD_POST,
+			&"url": MistHTTP.WEB_API % ["ISteamLeaderboards", "SetLeaderboardScore", "1"],
+			&"data": {
+				&"key": MistHTTP.web_api_key,
+				&"appid": str(Mist.app_id),
+			}
 		}
 	}
 
@@ -44,48 +57,12 @@ enum DisplayType {
 	MilliSeconds,
 }
 
-class Leaderboard:
-	var id : int
-	var entries : int
-	var sort_method : SortMethod
-	var display_type : DisplayType
-	var only_trusted_writes : bool
-	var only_friends_reads : bool
-	var only_users_in_same_party : bool
-	var limit_range_around_user : int
-	var limit_global_top_entries : int
-	var on_steam : bool
-	var on_local : bool
+enum ScoreMethod {
+	KeepBest,
+	ForceUpdate,
+}
 
-	static func parse(data : Dictionary) -> Leaderboard:
-		var leaderboard : Leaderboard = Leaderboard.new()
-
-		leaderboard.id = data.leaderBoardID
-		leaderboard.entries = data.leaderBoardEntries
-		leaderboard.sort_method = SortMethod.keys().find(data.leaderBoardSortMethod)
-		leaderboard.display_type = DisplayType.keys().find(data.leaderBoardDisplayType)
-		leaderboard.only_trusted_writes = true if data.onlytrustedwrites else false
-		leaderboard.only_friends_reads = data.onlyfriendsreads
-		leaderboard.only_users_in_same_party = data.onlyusersinsameparty
-		leaderboard.limit_range_around_user = int(data.limitrangearounduser)
-		leaderboard.limit_global_top_entries = int(data.limitglobaltopentries)
-
-		return leaderboard
-
-	func _to_string() -> String:
-		return "%s, %s, %s, %s, %s, %s, %s, %s, %s" % [
-			id,
-			entries,
-			sort_method,
-			display_type,
-			only_trusted_writes,
-			only_friends_reads,
-			only_users_in_same_party,
-			limit_range_around_user,
-			limit_global_top_entries
-		]
-
-var leaderboards : Dictionary[StringName, Leaderboard]
+var leaderboards : Dictionary[StringName, LeaderboardData]
 
 var leaderboard_handle : int
 
@@ -94,11 +71,19 @@ func _init() -> void:
 	Steam.leaderboard_score_uploaded.connect(_on_leaderboard_score_uploaded)
 	Steam.leaderboard_scores_downloaded.connect(_on_leaderboard_scores_downloaded)
 
-func find_leaderboard(level_name: String) -> void:
-	Steam.findLeaderboard(level_name)
+func get_leaderboard(leaderboard_name: StringName) -> int:
+	print("Leaderboard name %s" % leaderboard_name)
+	print(Mist.Config.data.Leaderboards[leaderboard_name])
+	return Mist.Config.data.Leaderboards[leaderboard_name].id
+
+func find_leaderboard(leaderboard_name: String) -> void:
+	## Godot Steam wants us to call steam for this
+	Steam.findLeaderboard(leaderboard_name)
 
 func set_score(leaderboard: int, score: int, details: Array[int] = [], keep_best: bool = true) -> void:
+	print("Setting score for %s" % leaderboard)
 	Steam.uploadLeaderboardScore(score, keep_best, PackedInt32Array(details), leaderboard)
+	await Steam.leaderboard_score_uploaded
 
 func get_scores(leaderboard: int, place_start: int = 1, place_end: int = 10, leaderboard_data : Steam.LeaderboardDataRequest = Steam.LEADERBOARD_DATA_REQUEST_GLOBAL) -> void:
 	Steam.downloadLeaderboardEntries(place_start, place_end, leaderboard_data, leaderboard)
@@ -113,19 +98,35 @@ func fetch_leaderboards() -> void:
 		_parse_leaderboards
 		)
 
+func find_or_create_leaderboards(leaderboard : LeaderboardData) -> void:
+	var call = WEB_CALL_DEFINITION[WEB_CALL.FindOrCreateLeaderboard]
+	call.data[&"name"] = leaderboard.name
+	call.data[&"sortmethod"] = leaderboard.sort_method_string
+	call.data[&"displaytype"] = leaderboard.display_type_string
+	call.data[&"onlytrustedwrites"] = leaderboard.only_trusted_writes
+	call.data[&"onlyfriendsreads"] = leaderboard.only_friends_reads
+
+	Mist.HTTP.make_request(
+		call,
+		_on_find_or_create_leaderboards
+		)
+
 ## Convert the Steam data into local copies of the leaderboards
 func _parse_leaderboards(result, response_code, headers, body):
 	var json = JSON.new()
 	json.parse(body.get_string_from_utf8())
-
 	var data = json.get_data()['leaderBoards']
 
 	for key in data:
 		if key != "leaderBoardCount":
-			if not leaderboards.has(key):
-				leaderboards[key] = Leaderboard.parse(data[key])
+			if not Mist.Config.data.Leaderboards.has(key):
+				Mist.Config.data.Leaderboards[key] = LeaderboardData.new()
 
-			leaderboards[key].on_steam = true
+			Mist.Config.data.Leaderboards[key].set_data(data)
+			Mist.Config.data.Leaderboards[key].name = key
+			Mist.Config.data.Leaderboards[key].on_steam = true
+			Mist.Config.save_data()
+
 	on_fetch_leaderboards.emit()
 
 func _on_leaderboard_find_result(handle: int, found: int) -> void:
@@ -136,12 +137,16 @@ func _on_leaderboard_find_result(handle: int, found: int) -> void:
 	else:
 		print("No handle found")
 
+func _on_find_or_create_leaderboards(result, response_code, headers, body):
+	print(result, response_code, headers, body.get_string_from_utf8())
+	fetch_leaderboards()
+
 func _on_leaderboard_score_uploaded(success: int, this_handle: int, this_score: Dictionary) -> void:
 	if success == 1:
-		print(this_handle, this_score)
+		print("Leaderboard uploaded ok", this_handle, this_score)
 
 	else:
-		print("Failed to upload scores!")
+		print("Failed to upload scores for %s" % this_handle)
 
 func _on_leaderboard_scores_downloaded(message: String, this_leaderboard_handle: int, result: Array) -> void:
 	print("Scores downloaded message: %s %s" % [message, this_leaderboard_handle])
@@ -151,12 +156,15 @@ func _on_leaderboard_scores_downloaded(message: String, this_leaderboard_handle:
 
 ## Register a leaderboard string
 func register(name : StringName) -> void:
-	if leaderboards.has(name):
+	if not Mist.Config.data.Leaderboards[name]:
+		print("Registering new leaderboard: %s" % name)
+		var leaderboard : LeaderboardData = LeaderboardData.new()
+		leaderboard.name = name
+		Mist.Config.data.Leaderboards[name] = leaderboard
+
+	if Mist.Config.data.Leaderboards[name].on_local:
 		return
 
-	var leaderboard : Leaderboard = Leaderboard.new()
+	Mist.Config.data.Leaderboards[name].on_local = true
 
-	leaderboard.on_local = true
-	leaderboards[name] = leaderboard
-
-	print(leaderboard)
+	Mist.Config.save_data()

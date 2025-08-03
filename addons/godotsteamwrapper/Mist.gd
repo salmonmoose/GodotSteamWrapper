@@ -20,6 +20,7 @@ var Authentication : MistAuthentication
 var P2P : MistP2P
 var Controller : MistInput
 var HTTP : MistHTTP
+var Config : MistConfig
 
 enum {
 	HOST,
@@ -41,12 +42,14 @@ func _enter_tree() -> void:
 	print("Initializing Steam APP_ID %s: %s" % [app_id, SteamStrings.AUTH[steam_init_response.status]])
 
 	HTTP = MistHTTP.new()
+	Config = MistConfig.new()
 	Leaderboards = MistLeaderboards.new()
+	Controller = MistInput.new()
 	#Achievements = MistAchievements.new()
 	#Lobby = MistLobbies.new()
 	#Authentication = MistAuthentication.new()
 	#P2P = MistP2P.new()
-	#Controller = MistInput.new()
+
 
 
 	if not is_owned:
