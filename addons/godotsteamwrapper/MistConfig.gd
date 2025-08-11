@@ -4,6 +4,18 @@ class_name MistConfig extends Node
 signal data_updated
 var data : MistData
 
+var Leaderboards : Dictionary[StringName, LeaderboardData] :
+	get:
+		return data.Leaderboards
+
+var Achievements : Dictionary[StringName, AchievementData] :
+	get:
+		return data.Achievements
+
+var Stats : Dictionary[StringName, StatData] :
+	get:
+		return data.Stats
+
 const FILENAME : StringName = &"mist_data.tres"
 
 func _init() -> void:

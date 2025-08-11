@@ -10,6 +10,8 @@ var is_on_steam_deck : bool : get = _is_on_steam_deck
 var steam_avatar : Image : set = _set_steam_avatar
 static var app_id : int : get = _get_app_id
 
+var steam_icon = preload("uid://cphqhxb1xs8cl")
+
 var auth_ticket: Dictionary
 var client_auth_tickets: Array
 
@@ -21,6 +23,7 @@ var P2P : MistP2P
 var Controller : MistInput
 var HTTP : MistHTTP
 var Config : MistConfig
+var Stats : MistStats
 
 enum {
 	HOST,
@@ -44,6 +47,7 @@ func _enter_tree() -> void:
 	HTTP = MistHTTP.new()
 	Config = MistConfig.new()
 	Leaderboards = MistLeaderboards.new()
+	Stats = MistStats.new()
 	Controller = MistInput.new()
 	#Achievements = MistAchievements.new()
 	#Lobby = MistLobbies.new()
@@ -78,12 +82,10 @@ static func _get_app_id() -> int:
 	return int(get_setting(SteamLoader.APP_ID))
 
 func _process(_delta: float) -> void:
+	Steam.runFrame()
+	if Steam.newDataAvailable():
+		Controller.emit_input_signals()
 	Steam.run_callbacks()
-	#if (Controller):
-		#pass
-		##Controller.emit_input_signals()
-	#if Lobby.currentLobby and Lobby.currentLobby.id > 0:
-		#P2P.read_all_p2p_packets()
 
 func _on_network_messages_session_request(this_identity: String) -> void:
 	var this_id: String = this_identity.split(':', true)[1]

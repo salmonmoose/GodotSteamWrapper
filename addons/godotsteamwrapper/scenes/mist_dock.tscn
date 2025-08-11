@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bvrfuplm0c3sq"]
+[gd_scene load_steps=4 format=3 uid="uid://bvrfuplm0c3sq"]
 
 [ext_resource type="Script" uid="uid://clfnh5pmcmyq" path="res://addons/godotsteamwrapper/scenes/mist_dock.gd" id="1_bt2df"]
 [ext_resource type="Script" uid="uid://brn3ml3dx1m4h" path="res://addons/godotsteamwrapper/scenes/editor_leaderboards.gd" id="1_c18c3"]
+[ext_resource type="Script" uid="uid://bcjijb3744th1" path="res://addons/godotsteamwrapper/scenes/editor_stats.gd" id="3_qglv4"]
 
 [node name="Mist" type="Control"]
 layout_mode = 3
@@ -67,169 +68,162 @@ text = "Fetch Leaderboards"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
+columns = 3
+column_titles_visible = true
 hide_root = true
+select_mode = 1
 
-[node name="LeaderboardView" type="VBoxContainer" parent="TabContainer/Leaderboards/Frames"]
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Leaderboards/Frames"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="LeaderboardView" type="VBoxContainer" parent="TabContainer/Leaderboards/Frames/ScrollContainer"]
 layout_mode = 2
 
-[node name="InputGrid" type="GridContainer" parent="TabContainer/Leaderboards/Frames/LeaderboardView"]
+[node name="InputGrid" type="GridContainer" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView"]
 layout_mode = 2
 size_flags_horizontal = 8
 columns = 2
 
-[node name="name_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="name_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Name"
 
-[node name="name_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="name_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 
-[node name="entries_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="community_name_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
+layout_mode = 2
+text = "Community Name"
+
+[node name="community_name_data" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="entries_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Entries"
 
-[node name="entries_data" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="entries_data" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="id_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="id_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "ID"
 
-[node name="id_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="id_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="display_type_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="display_type_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Display Type"
 
-[node name="display_type_edit" type="OptionButton" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="display_type_edit" type="OptionButton" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
-item_count = 15
+item_count = 3
 popup/item_0/text = "Numeric"
 popup/item_0/id = 0
 popup/item_1/text = "Seconds"
 popup/item_1/id = 1
 popup/item_2/text = "MilliSeconds"
 popup/item_2/id = 2
-popup/item_3/text = "Numeric"
-popup/item_3/id = 3
-popup/item_4/text = "Seconds"
-popup/item_4/id = 4
-popup/item_5/text = "MilliSeconds"
-popup/item_5/id = 5
-popup/item_6/text = "Numeric"
-popup/item_6/id = 6
-popup/item_7/text = "Seconds"
-popup/item_7/id = 7
-popup/item_8/text = "MilliSeconds"
-popup/item_8/id = 8
-popup/item_9/text = "Numeric"
-popup/item_9/id = 9
-popup/item_10/text = "Seconds"
-popup/item_10/id = 10
-popup/item_11/text = "MilliSeconds"
-popup/item_11/id = 11
-popup/item_12/text = "Numeric"
-popup/item_12/id = 12
-popup/item_13/text = "Seconds"
-popup/item_13/id = 13
-popup/item_14/text = "MilliSeconds"
-popup/item_14/id = 14
 
-[node name="sort_method_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="sort_method_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Sort Method"
 
-[node name="sort_method_edit" type="OptionButton" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="sort_method_edit" type="OptionButton" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
-item_count = 10
+item_count = 2
 popup/item_0/text = "Ascending"
 popup/item_0/id = 0
 popup/item_1/text = "Descending"
 popup/item_1/id = 1
-popup/item_2/text = "Ascending"
-popup/item_2/id = 2
-popup/item_3/text = "Descending"
-popup/item_3/id = 3
-popup/item_4/text = "Ascending"
-popup/item_4/id = 4
-popup/item_5/text = "Descending"
-popup/item_5/id = 5
-popup/item_6/text = "Ascending"
-popup/item_6/id = 6
-popup/item_7/text = "Descending"
-popup/item_7/id = 7
-popup/item_8/text = "Ascending"
-popup/item_8/id = 8
-popup/item_9/text = "Descending"
-popup/item_9/id = 9
 
-[node name="only_trusted_writes_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="only_trusted_writes_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Only Trusted Writes"
 
-[node name="only_trusted_writes_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="only_trusted_writes_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="only_friends_reads_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="only_friends_reads_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Only Friends Reads"
 
-[node name="only_friends_reads_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="only_friends_reads_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="only_users_in_same_party_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="only_users_in_same_party_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Only users in same party"
 
-[node name="only_users_in_same_party_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="only_users_in_same_party_edit" type="CheckBox" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="limit_global_top_entries_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="limit_global_top_entries_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Limit global top entries"
 
-[node name="limit_global_top_entries_edit" type="SpinBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="limit_global_top_entries_edit" type="SpinBox" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="limit_range_around_user_label" type="Label" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="limit_range_around_user_label" type="Label" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 layout_mode = 2
 text = "Limit range around user"
 
-[node name="limit_range_around_user_edit" type="SpinBox" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="limit_range_around_user_edit" type="SpinBox" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="push_to_steam" type="Button" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="push_to_steam" type="Button" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "Push to Steam"
+icon_alignment = 2
 
-[node name="delete_leaderboard" type="Button" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
+[node name="delete_leaderboard" type="Button" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "Delete Leaderbaord"
+icon_alignment = 2
+
+[node name="get_scores" type="Button" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "Get Scores"
+icon_alignment = 2
+
+[node name="reset_scores" type="Button" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "Reset Scores"
+icon_alignment = 2
+
+[node name="EntryList" type="Tree" parent="TabContainer/Leaderboards/Frames"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Delete Leaderbaord"
-
-[node name="get_scores" type="Button" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
-layout_mode = 2
-text = "Get Scores"
-
-[node name="reset_scores" type="Button" parent="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid"]
-layout_mode = 2
-text = "Reset Scores"
+columns = 3
+column_titles_visible = true
+hide_root = true
+select_mode = 1
 
 [node name="Lobbies" type="VBoxContainer" parent="TabContainer"]
 visible = false
@@ -246,9 +240,18 @@ visible = false
 layout_mode = 2
 metadata/_tab_index = 6
 
+[node name="Stats" type="VBoxContainer" parent="TabContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("3_qglv4")
+metadata/_tab_index = 7
+
+[node name="Frames" type="HBoxContainer" parent="TabContainer/Stats"]
+layout_mode = 2
+
 [connection signal="pressed" from="TabContainer/Mist/Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="TabContainer/Leaderboards/Frames/Actions/FetchLeaderboardsButton" to="TabContainer/Leaderboards" method="_on_fetch_leaderboards_button_pressed"]
-[connection signal="pressed" from="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid/push_to_steam" to="TabContainer/Leaderboards" method="_on_push_to_steam_pressed"]
-[connection signal="pressed" from="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid/delete_leaderboard" to="TabContainer/Leaderboards" method="_on_delete_leaderboard_pressed"]
-[connection signal="pressed" from="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid/get_scores" to="TabContainer/Leaderboards" method="_on_get_scores_pressed"]
-[connection signal="pressed" from="TabContainer/Leaderboards/Frames/LeaderboardView/InputGrid/reset_scores" to="TabContainer/Leaderboards" method="_on_reset_scores_pressed"]
+[connection signal="pressed" from="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid/push_to_steam" to="TabContainer/Leaderboards" method="_on_push_to_steam_pressed"]
+[connection signal="pressed" from="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid/delete_leaderboard" to="TabContainer/Leaderboards" method="_on_delete_leaderboard_pressed"]
+[connection signal="pressed" from="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid/get_scores" to="TabContainer/Leaderboards" method="_on_get_scores_pressed"]
+[connection signal="pressed" from="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid/reset_scores" to="TabContainer/Leaderboards" method="_on_reset_scores_pressed"]

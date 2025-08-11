@@ -3,7 +3,9 @@ class_name LeaderboardData extends Resource
 
 @export var id : int
 @export var name : StringName
-@export var entries : int = 0# Don't save it, data is always live
+@export var leaderBoardDisplayName : StringName
+@export var entries : Array[LeaderboardEntryData]
+@export var entries_count : int = 0# Don't save it, data is always live
 @export var sort_method : MistLeaderboards.SortMethod
 @export var display_type : MistLeaderboards.DisplayType
 @export var only_trusted_writes : bool
@@ -18,9 +20,10 @@ class_name LeaderboardData extends Resource
 @export var display_type_string : StringName : get = _get_display_type_string
 
 func parse(data: Dictionary) -> void:
-	print(data)
 	id = data.leaderBoardID
-	entries = data.leaderBoardEntries
+	entries_count = data.leaderBoardEntries
+	if data.has(leaderBoardDisplayName):
+		leaderBoardDisplayName = data.leaderBoardDisplayName
 	sort_method = MistLeaderboards.SortMethod.keys().find(data.leaderBoardSortMethod)
 	display_type = MistLeaderboards.DisplayType.keys().find(data.leaderBoardDisplayType)
 	only_trusted_writes = true if data.onlytrustedwrites else false
@@ -38,7 +41,7 @@ func _get_display_type_string() -> StringName:
 func _to_string() -> String:
 	return "%s, %s, %s, %s, %s, %s, %s, %s, %s" % [
 		id,
-		entries,
+		entries_count,
 		sort_method,
 		display_type,
 		only_trusted_writes,
