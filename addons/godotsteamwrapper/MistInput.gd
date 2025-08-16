@@ -12,6 +12,8 @@ var action_sets : Array[StringName] = [
 	&"MenuControls",
 ]
 
+#FIXME: We can find controllers in C:\Program Files(x86)\Steam\controller_base\templates
+
 var current_action_set : String = &"MenuControls" : set = _set_current_action_set
 
 var got_handles : bool = false
