@@ -1,5 +1,5 @@
 @tool
-class_name MistLeaderboards extends Node
+class_name MistLeaderboards extends Object
 
 signal on_fetch_leaderboards
 signal on_get_leaderboard_entries
@@ -240,7 +240,7 @@ func _on_leaderboard_scores_downloaded(message: String, this_leaderboard_handle:
 ## Registered Leaderboards are marked as local and can be pushed to steam to assure matching
 ## Leaderboard pairs
 func register(name : StringName) -> void:
-	if not Mist.Config.data.Leaderboards[name]:
+	if not Mist.Config.data.Leaderboards.has(name):
 		print("Registering new leaderboard: %s" % name)
 		var leaderboard : LeaderboardData = LeaderboardData.new()
 		leaderboard.name = name

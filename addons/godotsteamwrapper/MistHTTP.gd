@@ -1,4 +1,4 @@
-class_name MistHTTP extends Node
+class_name MistHTTP extends Object
 
 #Grants access to functions available here: https://partner.steamgames.com/doc/webapi_overview
 

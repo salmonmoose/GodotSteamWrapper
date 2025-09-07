@@ -1,5 +1,5 @@
 @tool
-extends VBoxContainer
+extends Control
 
 var both : Color = Color.GREEN
 var local : Color = Color.YELLOW

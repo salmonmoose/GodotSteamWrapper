@@ -40,10 +40,16 @@ signal fire_achievement(achievment_name: String)
 signal set_int_stat(stat_name: String, value: int)
 signal set_float_stat(stat_name: String, value: float)
 
-func _enter_tree() -> void:
+func _ready() -> void:
 	var steam_init_response: Dictionary = Steam.steamInitEx(app_id, true)
-	print("Initializing Steam APP_ID %s: %s" % [app_id, SteamStrings.AUTH[steam_init_response.status]])
+	print("Initializing Steam APP_ID %s: %s" % [app_id, SteamStrings.AUTH[steam_init_response.status]])	
+	if not is_owned:
+		if OS.is_debug_build():
+			push_warning("Game not owned on Steam")
+		else:
+			get_tree().quit()
 
+func _enter_tree() -> void:
 	HTTP = MistHTTP.new()
 	Config = MistConfig.new()
 	Leaderboards = MistLeaderboards.new()
@@ -54,21 +60,10 @@ func _enter_tree() -> void:
 	#Authentication = MistAuthentication.new()
 	#P2P = MistP2P.new()
 
-
-
-	if not is_owned:
-		if OS.is_debug_build():
-			push_warning("Game not owned on Steam")
-		else:
-			get_tree().quit()
-
 	#SettingsGlobal.player.name = steam_name
-
 	#Steam.avatar_loaded.connect(_avatar_loaded)
-#
 	#Steam.network_messages_session_request.connect(_on_network_messages_session_request)
 	#Steam.network_messages_session_failed.connect(_on_network_messages_session_failed)
-
 	#Steam.getPlayerAvatar()
 #
 	#auth_ticket = Steam.getAuthSessionTicket()
@@ -82,9 +77,11 @@ static func _get_app_id() -> int:
 	return int(get_setting(SteamLoader.APP_ID))
 
 func _process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
 	Steam.runFrame()
-	if Steam.newDataAvailable():
-		Controller.emit_input_signals()
+	#if Steam.newDataAvailable():
+	Controller.emit_input_signals()
 	Steam.run_callbacks()
 
 func _on_network_messages_session_request(this_identity: String) -> void:

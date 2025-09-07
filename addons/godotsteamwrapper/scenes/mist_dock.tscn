@@ -1,11 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://bvrfuplm0c3sq"]
+[gd_scene load_steps=5 format=3 uid="uid://bvrfuplm0c3sq"]
 
 [ext_resource type="Script" uid="uid://clfnh5pmcmyq" path="res://addons/godotsteamwrapper/scenes/mist_dock.gd" id="1_bt2df"]
 [ext_resource type="Script" uid="uid://brn3ml3dx1m4h" path="res://addons/godotsteamwrapper/scenes/editor_leaderboards.gd" id="1_c18c3"]
+[ext_resource type="Script" uid="uid://btvgexdpkw7y4" path="res://addons/godotsteamwrapper/scenes/editor_input.gd" id="2_6p3rw"]
 [ext_resource type="Script" uid="uid://bcjijb3744th1" path="res://addons/godotsteamwrapper/scenes/editor_stats.gd" id="3_qglv4"]
 
 [node name="Mist" type="Control"]
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = 466.0
@@ -21,7 +23,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-current_tab = 3
+current_tab = 2
 
 [node name="Mist" type="VBoxContainer" parent="TabContainer"]
 visible = false
@@ -38,11 +40,25 @@ layout_mode = 2
 metadata/_tab_index = 1
 
 [node name="Input" type="VBoxContainer" parent="TabContainer"]
-visible = false
 layout_mode = 2
+script = ExtResource("2_6p3rw")
 metadata/_tab_index = 2
 
+[node name="AddActionSet" type="Button" parent="TabContainer/Input"]
+layout_mode = 2
+text = "Add Action Set"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Input"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActionSetList" type="GridContainer" parent="TabContainer/Input/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="Leaderboards" type="VBoxContainer" parent="TabContainer"]
+visible = false
 layout_mode = 2
 script = ExtResource("1_c18c3")
 metadata/_tab_index = 3
@@ -89,7 +105,7 @@ columns = 2
 layout_mode = 2
 text = "Name"
 
-[node name="name_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
+[node name="name_edit" type="LineEdit" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -113,7 +129,7 @@ layout_mode = 2
 layout_mode = 2
 text = "ID"
 
-[node name="id_edit" type="TextEdit" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
+[node name="id_edit" type="LineEdit" parent="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -250,6 +266,7 @@ metadata/_tab_index = 7
 layout_mode = 2
 
 [connection signal="pressed" from="TabContainer/Mist/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="TabContainer/Input/AddActionSet" to="TabContainer/Input" method="_on_add_action_set_pressed"]
 [connection signal="pressed" from="TabContainer/Leaderboards/Frames/Actions/FetchLeaderboardsButton" to="TabContainer/Leaderboards" method="_on_fetch_leaderboards_button_pressed"]
 [connection signal="pressed" from="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid/push_to_steam" to="TabContainer/Leaderboards" method="_on_push_to_steam_pressed"]
 [connection signal="pressed" from="TabContainer/Leaderboards/Frames/ScrollContainer/LeaderboardView/InputGrid/delete_leaderboard" to="TabContainer/Leaderboards" method="_on_delete_leaderboard_pressed"]

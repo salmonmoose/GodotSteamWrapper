@@ -19,7 +19,11 @@ var WEB_CALL_DEFINITION : Dictionary = {
 func _init() -> void:
 	Steam.user_stats_received.connect(_on_user_stats_received)
 	get_schema_for_game()
+	
+
+func _ready() -> void:
 	Steam.requestUserStats(Mist.steam_id)
+
 
 func _exit_tree() -> void:
 	store_stats()

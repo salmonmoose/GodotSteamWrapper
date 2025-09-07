@@ -1,5 +1,5 @@
 @tool
-class_name MistConfig extends Node
+class_name MistConfig extends Object
 
 signal data_updated
 var data : MistData
@@ -27,22 +27,21 @@ var test_data : Dictionary[StringName, Variant] = {
 }
 
 var Leaderboards : Dictionary[StringName, LeaderboardData] :
-	get:
-		return data.Leaderboards
+	get: return data.Leaderboards
 
 var Achievements : Dictionary[StringName, AchievementData] :
-	get:
-		return data.Achievements
+	get: return data.Achievements
 
 var Stats : Dictionary[StringName, StatData] :
-	get:
-		return data.Stats
+	get: return data.Stats
+
+var Controller : ControllerData :
+	get: return data.Controller
 
 const FILENAME : StringName = &"mist_data.tres"
 
 func _init() -> void:
 	load_data()
-	print(load_vdf("res://addons/godotsteamwrapper/data_types/controller_templates/controller_generic_gamepad_joystick.vdf"))
 
 func load_data() -> void:
 	if ResourceLoader.exists(FILENAME):
@@ -50,7 +49,6 @@ func load_data() -> void:
 		data_updated.emit()
 	else:
 		data = MistData.new()
-
 
 func save_data() -> void:
 	var err = ResourceSaver.save(data, FILENAME)
